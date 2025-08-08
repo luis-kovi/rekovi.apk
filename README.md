@@ -1,88 +1,111 @@
-# Prod Recolha v2
+# Rekovi APK - Aplicativo Android Nativo
 
-Aplicação de gerenciamento de tarefas com autenticação segura.
+Este repositório contém um aplicativo Android nativo para o sistema Rekovi de gestão de recolha de veículos.
 
-## 🔒 Correções de Segurança Implementadas
+## 🚀 Estrutura do Projeto
 
-### 1. Middleware de Autenticação
-- ✅ Implementado middleware que verifica sessões do usuário
-- ✅ Proteção de rotas sensíveis (`/kanban`, `/settings`)
-- ✅ Redirecionamento automático para login quando não autenticado
-- ✅ Prevenção de acesso a páginas de auth quando já logado
+### Componentes Mantidos (Referência Web)
+- **Tela de Login**: `app/auth/signin/page.tsx` - Sistema completo de autenticação
+- **Página Mobile**: `app/mobile/page.tsx` - Interface mobile principal  
+- **Componentes Mobile**: `components/Mobile*` - Componentes otimizados para mobile
+- **Configurações Supabase**: `utils/supabase/` - Cliente e servidor
+- **Validação de Auth**: `utils/auth-validation.ts` - Lógica de permissões
+- **Types**: `types.ts` - Interfaces TypeScript
 
-### 2. Tratamento de Erros Melhorado
-- ✅ Cliente Supabase agora lança erros em vez de retornar `null`
-- ✅ Mensagens de erro mais descritivas
-- ✅ Remoção de logs de debug desnecessários
+### App Android Nativo
+- **Localização**: `android-task-manager/`
+- **Tecnologia**: Kotlin + Jetpack Compose
+- **Arquitetura**: MVVM + Hilt + Retrofit
 
-### 3. Configuração de Build Segura
-- ✅ Habilitada verificação de TypeScript durante build
-- ✅ Habilitado ESLint durante build
-- ✅ Adicionados headers de segurança
-- ✅ Removidas configurações que ocultavam problemas
+## ⚙️ Configuração
 
-## 🚀 Como Executar
+### 1. Configurar Supabase no Android
+
+Edite o arquivo `android-task-manager/app/src/main/java/com/taskmanager/network/SupabaseApiService.kt`:
+
+```kotlin
+companion object {
+    const val BASE_URL = "https://sua-url-supabase.supabase.co/"
+    const val ANON_KEY = "sua-chave-anonima-aqui"
+}
+```
+
+### 2. Estrutura do Banco de Dados
+
+O app espera as seguintes tabelas/views no Supabase:
+
+- `v_pipefy_cards_detalhada` - View com dados dos cards/tarefas
+- `pre_approved_users` - Tabela de usuários pré-aprovados
+
+### 3. Tipos de Permissão
+
+- **admin/kovi**: Acesso total
+- **ativa/onsystem**: Acesso por empresa
+- **chofer**: Acesso apenas aos próprios cards
+
+## 🛠️ Executar o App Android
 
 ### Pré-requisitos
-- Node.js 18+
-- Conta no Supabase
+- Android Studio Giraffe+ (2023.2.1+)
+- JDK 8+
+- Android SDK API 24+
 
-### Variáveis de Ambiente
-Crie um arquivo `.env.local` na raiz do projeto:
+### Passos
+1. Abra `android-task-manager/` no Android Studio
+2. Configure as credenciais do Supabase
+3. Execute o projeto (Shift+F10)
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
-```
+## 📱 Funcionalidades
 
-### Instalação
-```bash
-npm install
-```
+### Autenticação
+- Login com email/senha
+- Validação de usuários pré-aprovados
+- Controle de permissões por tipo de usuário
 
-### Desenvolvimento
-```bash
-npm run dev
-```
+### Lista de Tarefas
+- Visualização otimizada para mobile
+- Filtros por fase e busca por texto
+- Pull-to-refresh para atualização
+- Real-time updates via Supabase
 
-### Build para Produção
-```bash
-npm run build
-```
+### Detalhes da Tarefa
+- Modal completo com todas as informações
+- Links interativos (mapas, URLs)
+- Interface responsiva
 
-## 🔐 Autenticação
+## 🎨 Design System
 
-A aplicação agora possui um sistema de autenticação completo:
+### Cores Principais
+- **Primary**: `#FF355A` (Vermelho Rekovi)
+- **Secondary**: `#E62E4F` (Vermelho escuro)
+- **Background**: Gradiente vermelho
 
-- **Login**: `/auth/signin`
-- **Registro**: `/auth/signup`
-- **Logout**: Botão disponível nas páginas protegidas
+### Fases de Cards
+- Fila de Recolha
+- Aprovar Custo de Recolha
+- Tentativa 1/2/3 de Recolha
+- Desbloquear Veículo
+- Solicitar Guincho
+- Nova tentativa de recolha
+- Confirmação de Entrega no Pátio
 
-### Rotas Protegidas
-- `/kanban` - Quadro Kanban
-- `/settings` - Configurações
+## 📝 Próximos Passos
 
-### Rotas Públicas
-- `/` - Página inicial
-- `/auth/*` - Páginas de autenticação
+1. ✅ Integração do design Rekovi
+2. ✅ Sistema de autenticação web integrado
+3. ✅ Componentes mobile adaptados
+4. 🔄 Notificações push
+5. 🔄 Modo offline
+6. 🔄 Real-time updates
+7. 🔄 Biometria
 
-## 🛡️ Melhorias de Segurança
+## 🔒 Segurança
 
-1. **Middleware de Autenticação**: Verifica sessões em todas as rotas protegidas
-2. **Headers de Segurança**: Implementados no `next.config.ts`
-3. **Tratamento de Erros**: Melhorado para evitar falhas silenciosas
-4. **Validação de Variáveis**: Verificação adequada de variáveis de ambiente
+- Headers de autenticação automáticos
+- Validação de permissões
+- Armazenamento seguro de tokens
+- Limpeza de dados no logout
 
-## 📝 Notas Importantes
+---
 
-- Certifique-se de configurar as variáveis de ambiente do Supabase
-- O middleware agora protege adequadamente as rotas sensíveis
-- Os erros são tratados de forma mais robusta
-- A configuração de build foi otimizada para segurança
-
-## 🚨 Antes do Deploy
-
-1. Configure as variáveis de ambiente no Vercel
-2. Verifique se o Supabase está configurado corretamente
-3. Teste o fluxo de autenticação localmente
-4. Execute `npm run build` para verificar se não há erros.
+**Desenvolvido para Rekovi com ❤️ usando Android + Kotlin + Jetpack Compose**

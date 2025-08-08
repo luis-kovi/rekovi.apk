@@ -46,8 +46,31 @@ interface SupabaseApiService {
         @QueryMap filters: Map<String, String>
     ): Response<List<Card>>
     
+    // Validação de usuário pré-aprovado
+    @GET("rest/v1/pre_approved_users")
+    suspend fun getPreApprovedUser(
+        @Header("Authorization") token: String,
+        @Header("apikey") apiKey: String,
+        @Query("select") select: String = "email,permission_type,status,empresa,area_atuacao",
+        @Query("email") email: String
+    ): Response<List<PreApprovedUser>>
+    
     companion object {
+        // IMPORTANTE: Configure com suas credenciais do Supabase
         const val BASE_URL = "https://your-supabase-url.supabase.co/"
         const val ANON_KEY = "your-anon-key-here"
+        
+        // Fases válidas para filtros
+        val VALID_PHASES = listOf(
+            "Fila de Recolha",
+            "Aprovar Custo de Recolha", 
+            "Tentativa 1 de Recolha",
+            "Tentativa 2 de Recolha",
+            "Tentativa 3 de Recolha",
+            "Desbloquear Veículo",
+            "Solicitar Guincho",
+            "Nova tentativa de recolha",
+            "Confirmação de Entrega no Pátio"
+        )
     }
 }

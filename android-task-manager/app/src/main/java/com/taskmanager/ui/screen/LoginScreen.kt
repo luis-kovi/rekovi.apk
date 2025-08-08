@@ -50,8 +50,8 @@ fun LoginScreen(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF667eea),
-                        Color(0xFF764ba2)
+                        Color(0xFFFF355A),
+                        Color(0xFFE62E4F)
                     )
                 )
             )
@@ -63,21 +63,45 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo/Título
+            // Logo Rekovi
+            Card(
+                modifier = Modifier.size(120.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "REKOVI",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFFF355A),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
             Text(
-                text = "Task Manager",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
+                text = "Gestão de recolha",
+                fontSize = 16.sp,
+                color = Color.White.copy(alpha = 0.9f),
                 textAlign = TextAlign.Center
             )
             
             Spacer(modifier = Modifier.height(8.dp))
             
             Text(
-                text = "Gerenciamento de Recolhimento",
-                fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.8f),
+                text = "Entrar na sua conta",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
                 textAlign = TextAlign.Center
             )
             
@@ -120,8 +144,8 @@ fun LoginScreen(
                         ),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF667eea),
-                            focusedLabelColor = Color(0xFF667eea)
+                            focusedBorderColor = Color(0xFFFF355A),
+                            focusedLabelColor = Color(0xFFFF355A)
                         )
                     )
                     
@@ -150,8 +174,8 @@ fun LoginScreen(
                         ),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF667eea),
-                            focusedLabelColor = Color(0xFF667eea)
+                            focusedBorderColor = Color(0xFFFF355A),
+                            focusedLabelColor = Color(0xFFFF355A)
                         )
                     )
                     
@@ -171,7 +195,7 @@ fun LoginScreen(
                                 uiState.password.isNotBlank(),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF667eea)
+                            containerColor = Color(0xFFFF355A)
                         )
                     ) {
                         if (uiState.isLoading) {
