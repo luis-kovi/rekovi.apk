@@ -4,12 +4,12 @@
 
 ### 1. Configurar Credenciais do Supabase
 
-**Arquivo:** `android-task-manager/app/src/main/java/com/taskmanager/network/SupabaseApiService.kt`
+**Arquivo:** `app/src/main/java/com/rekovi/taskmanager/data/source/remote/SupabaseClient.kt`
 
 ```kotlin
 companion object {
-    const val BASE_URL = "https://SEU_PROJETO.supabase.co/"
-    const val ANON_KEY = "SUA_CHAVE_ANONIMA_AQUI"
+    const val SUPABASE_URL = "https://SEU_PROJETO.supabase.co"
+    const val SUPABASE_ANON_KEY = "SUA_CHAVE_ANONIMA_AQUI"
 }
 ```
 
@@ -87,12 +87,12 @@ INSERT INTO sua_tabela_de_cards (
 
 1. **Abrir o Projeto**
    ```bash
-   # Abra a pasta android-task-manager no Android Studio
-   cd android-task-manager
+   # Abra a pasta rekovi_apk no Android Studio
+   # File -> Open -> Selecione a pasta "rekovi_apk"
    ```
 
 2. **Configurar Credenciais**
-   - Edite `SupabaseApiService.kt` com suas credenciais
+   - Edite `SupabaseClient.kt` com suas credenciais
 
 3. **Sync & Build**
    - Aguarde o Gradle sync
