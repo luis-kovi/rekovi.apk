@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Rekovi</string>
+    
+    <!-- Authentication -->
+    <string name="email">E-mail</string>
+    <string name="password">Senha</string>
+    <string name="login">Entrar</string>
+    <string name="logout">Sair</string>
+    <string name="email_hint">Digite seu e-mail</string>
+    <string name="password_hint">Digite sua senha</string>
+    
+    <!-- Tasks -->
+    <string name="tasks">Tarefas</string>
+    <string name="search_hint">Pesquisar por placa, motorista...</string>
+    <string name="filters">Filtros</string>
+    <string name="all_phases">Todas as fases</string>
+    <string name="no_tasks_found">Nenhuma tarefa encontrada</string>
+    <string name="adjust_filters">Tente ajustar os filtros de pesquisa</string>
+    <string name="pull_to_refresh">Puxe para atualizar</string>
+    <string name="updating">Atualizando...</string>
+    
+    <!-- Card Details -->
+    <string name="details">Detalhes</string>
+    <string name="actions">Ações</string>
+    <string name="history">Histórico</string>
+    <string name="plate">Placa</string>
+    <string name="driver">Motorista</string>
+    <string name="chofer">Chofer</string>
+    <string name="company">Empresa</string>
+    <string name="phase">Fase</string>
+    <string name="created_at">Criado em</string>
+    <string name="vehicle_model">Modelo do Veículo</string>
+    <string name="contact_phone">Telefone de Contato</string>
+    <string name="optional_phone">Telefone Opcional</string>
+    <string name="client_email">E-mail do Cliente</string>
+    <string name="registration_address">Endereço de Cadastro</string>
+    <string name="pickup_address">Endereço de Recolha</string>
+    <string name="map_link">Link do Mapa</string>
+    <string name="origin_location">Origem da Locação</string>
+    <string name="pickup_value">Valor da Recolha</string>
+    <string name="additional_km_cost">Custo por Km Adicional</string>
+    <string name="public_url">URL Pública</string>
+    
+    <!-- Phases -->
+    <string name="fila_recolha">Fila de Recolha</string>
+    <string name="aprovar_custo">Aprovar Custo de Recolha</string>
+    <string name="tentativa_1">Tentativa 1 de Recolha</string>
+    <string name="tentativa_2">Tentativa 2 de Recolha</string>
+    <string name="tentativa_3">Tentativa 3 de Recolha</string>
+    <string name="desbloquear_veiculo">Desbloquear Veículo</string>
+    <string name="solicitar_guincho">Solicitar Guincho</string>
+    <string name="nova_tentativa">Nova tentativa de recolha</string>
+    <string name="confirmacao_entrega">Confirmação de Entrega no Pátio</string>
+    
+    <!-- Permission Types -->
+    <string name="admin">Administrador</string>
+    <string name="kovi">Kovi</string>
+    <string name="ativa">Ativa</string>
+    <string name="onsystem">OnSystem</string>
+    <string name="chofer_permission">Chofer</string>
+    
+    <!-- Common -->
+    <string name="loading">Carregando...</string>
+    <string name="error">Erro</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="close">Fechar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="ok">OK</string>
+    <string name="today">Hoje</string>
+    <string name="yesterday">Ontem</string>
+    <string name="days_ago">%d dias atrás</string>
+    <string name="pending_allocation">Pendente de alocação</string>
+    <string name="card_id">ID: %s</string>
+    <string name="tap_for_details">Toque para detalhes</string>
+    
+    <!-- Error Messages -->
+    <string name="error_network">Erro de conexão. Verifique sua internet.</string>
+    <string name="error_authentication">Erro de autenticação</string>
+    <string name="error_unauthorized">Acesso não autorizado</string>
+    <string name="error_user_not_found">Usuário não encontrado</string>
+    <string name="error_user_inactive">Usuário inativo</string>
+    <string name="error_invalid_credentials">E-mail ou senha inválidos</string>
+    <string name="error_general">Ocorreu um erro inesperado</string>
+</resources>
+

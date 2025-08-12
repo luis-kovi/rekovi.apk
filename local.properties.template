@@ -1,0 +1,15 @@
+# This file contains machine-specific configuration for your local development environment.
+# This file should NOT be committed to version control.
+
+# Location of the Android SDK. This can be set via the ANDROID_HOME environment variable.
+sdk.dir=C:\\Users\\{YourUsername}\\AppData\\Local\\Android\\Sdk
+
+# Example for macOS/Linux:
+# sdk.dir=/Users/{username}/Library/Android/sdk
+
+# Supabase Configuration (uncomment and fill with your values)
+# SUPABASE_URL=https://your-project.supabase.co
+# SUPABASE_ANON_KEY=your-anon-key-here
+
+# Note: You can also set these directly in SupabaseClient.kt for testing
+

@@ -1,0 +1,16 @@
+// Script para obter SHA-1 fingerprint
+android.signingConfigs.debug.storeFile?.let { keystore ->
+    println("=== SHA-1 FINGERPRINT ===")
+    println("Keystore: ${keystore.absolutePath}")
+    
+    def proc = "keytool -list -v -keystore ${keystore.absolutePath} -alias androiddebugkey -storepass android -keypass android".execute()
+    proc.waitFor()
+    
+    def output = proc.text
+    def sha1Line = output.split('\n').find { it.contains('SHA1:') }
+    if (sha1Line) {
+        def sha1 = sha1Line.split('SHA1:')[1].trim()
+        println("SHA-1: ${sha1}")
+        println("=========================")
+    }
+}
