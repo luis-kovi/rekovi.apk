@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../core/supabase_client.dart';
 import '../data/cards_repository.dart';
 import '../data/models/card_model.dart';
+import '../data/user_repository.dart';
+import '../data/models/user_data.dart';
 import 'widgets/mobile_header.dart';
 import 'widgets/mobile_task_card.dart';
 import 'widgets/mobile_filter_panel.dart';
@@ -19,6 +21,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
   String? _error;
   List<CardModel> _cards = const [];
   Set<String> _selectedPhases = {};
+  UserData? _userData;
 
   @override
   void initState() {
@@ -35,8 +38,16 @@ class _MobileHomePageState extends State<MobileHomePage> {
         Navigator.of(context).pushReplacementNamed('/');
         return;
       }
-      // Em breve: buscar permissionType via tabela pre_approved_users
-      final cards = await _repo.fetchCards(permissionType: 'admin', userEmail: user.email ?? '');
+      // Buscar dados do usuário para aplicar regras de permissão
+      final userRepo = UserRepository();
+      final ud = await userRepo.getUserData(user.email ?? '');
+      if (ud == null || ud.status != 'active') {
+        if (!mounted) return;
+        setState(() => _error = 'Usuário sem acesso.');
+        return;
+      }
+      _userData = ud;
+      final cards = await _repo.fetchCards(permissionType: ud.permissionType, userEmail: ud.email);
       if (!mounted) return;
       setState(() => _cards = cards);
     } catch (e) {

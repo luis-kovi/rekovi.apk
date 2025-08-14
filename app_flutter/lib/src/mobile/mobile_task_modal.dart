@@ -50,6 +50,13 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
 
   final TextEditingController mechanicalTowReason = TextEditingController();
 
+  // Alocar chofer
+  final TextEditingController collectionDate = TextEditingController();
+  final TextEditingController collectionTime = TextEditingController();
+  String? selectedChofer;
+  String? choferEmail;
+  List<Map<String, String>> availableChofers = const [];
+
   Future<void> _pickImage(Function(File) setter) async {
     final img = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 85);
     if (img != null) setter(File(img.path));
@@ -165,6 +172,71 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
               ],
 
               if (showConfirmPatioDelivery) ...[
+                // Alocar chofer (layout vertical com Data/Hora)
+                const SizedBox(height: 8),
+                const Text('Alocar chofer', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  value: selectedChofer,
+                  decoration: const InputDecoration(labelText: 'Chofer *'),
+                  items: availableChofers
+                      .map((c) => DropdownMenuItem(
+                            value: c['name'],
+                            child: Text(c['name'] ?? ''),
+                          ))
+                      .toList(),
+                  onChanged: (v) {
+                    setState(() {
+                      selectedChofer = v;
+                      final found = availableChofers.firstWhere(
+                        (e) => e['name'] == v,
+                        orElse: () => {'email': ''},
+                      );
+                      choferEmail = found['email'];
+                    });
+                  },
+                ),
+                const SizedBox(height: 8),
+                if (selectedChofer != null && (choferEmail?.isNotEmpty ?? false))
+                  TextFormField(
+                    readOnly: true,
+                    initialValue: choferEmail,
+                    decoration: const InputDecoration(labelText: 'E-mail do Chofer'),
+                  ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: collectionDate,
+                  readOnly: true,
+                  decoration: const InputDecoration(labelText: 'Data prevista de recolha *'),
+                  onTap: () async {
+                    final now = DateTime.now();
+                    final picked = await showDatePicker(
+                      context: context,
+                      firstDate: now.subtract(const Duration(days: 0)),
+                      lastDate: now.add(const Duration(days: 365)),
+                      initialDate: now,
+                    );
+                    if (picked != null) {
+                      collectionDate.text = '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: collectionTime,
+                  readOnly: true,
+                  decoration: const InputDecoration(labelText: 'Hora prevista de recolha *'),
+                  onTap: () async {
+                    final picked = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    if (picked != null) {
+                      collectionTime.text = picked.format(context);
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
                 const Text('Fotos do veículo no pátio *', style: TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
                 GridView.count(
