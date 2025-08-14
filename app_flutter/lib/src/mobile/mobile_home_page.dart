@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../core/supabase_client.dart';
 import '../data/cards_repository.dart';
 import '../data/models/card_model.dart';
+import 'widgets/mobile_header.dart';
+import 'widgets/mobile_task_card.dart';
+import 'widgets/mobile_filter_panel.dart';
 
 class MobileHomePage extends StatefulWidget {
   const MobileHomePage({super.key});
@@ -15,6 +18,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
   bool _loading = true;
   String? _error;
   List<CardModel> _cards = const [];
+  Set<String> _selectedPhases = {};
 
   @override
   void initState() {
@@ -45,7 +49,24 @@ class _MobileHomePageState extends State<MobileHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Rekovi - Mobile')),
+      appBar: MobileHeader(
+        userEmail: SupabaseManager.client.auth.currentUser?.email,
+        isUpdating: _loading,
+        onOpenFilter: () {
+          showModalBottomSheet(
+            context: context,
+            showDragHandle: true,
+            isScrollControlled: true,
+            builder: (_) => MobileFilterPanel(
+              phases: CardsRepository.validPhases,
+              onChanged: (set) {
+                setState(() => _selectedPhases = set);
+                Navigator.pop(context);
+              },
+            ),
+          );
+        },
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -55,15 +76,23 @@ class _MobileHomePageState extends State<MobileHomePage> {
                   child: ListView.separated(
                     padding: const EdgeInsets.all(12),
                     itemBuilder: (_, i) {
-                      final c = _cards[i];
-                      return ListTile(
-                        title: Text('${c.id} · ${c.placa}'),
-                        subtitle: Text('${c.faseAtual} · ${c.nomeDriver}'),
-                        trailing: const Icon(Icons.chevron_right),
+                      final visible = _cards.where((c) => _selectedPhases.isEmpty || _selectedPhases.contains(c.faseAtual)).toList();
+                      if (i >= visible.length) return const SizedBox.shrink();
+                      final c = visible[i];
+                      return MobileTaskCard(
+                        card: c,
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            useSafeArea: true,
+                            builder: (_) => MobileTaskModal(card: c),
+                          );
+                        },
                       );
                     },
                     separatorBuilder: (_, __) => const Divider(height: 1),
-                    itemCount: _cards.length,
+                    itemCount: _cards.where((c) => _selectedPhases.isEmpty || _selectedPhases.contains(c.faseAtual)).length,
                   ),
                 ),
     );
