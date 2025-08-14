@@ -9,7 +9,8 @@ import '../data/chofer_repository.dart';
 
 class MobileTaskModal extends StatefulWidget {
   final CardModel card;
-  const MobileTaskModal({super.key, required this.card});
+  final List<String>? userAreas;
+  const MobileTaskModal({super.key, required this.card, this.userAreas});
 
   @override
   State<MobileTaskModal> createState() => _MobileTaskModalState();
@@ -61,6 +62,9 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
   List<Map<String, String>> availableChofers = const [];
   bool _loadingChofers = false;
   bool _submitting = false;
+  double _progress = 0.0; // 0..1
+  int _totalUploads = 0;
+  int _completedUploads = 0;
   String _choferQuery = '';
 
   @override
@@ -75,7 +79,7 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
       final repo = ChoferRepository();
       availableChofers = await repo.fetchAvailableChofers(
         empresa: widget.card.empresaResponsavel,
-        // areas: userData.areaAtuacao (quando disponível na Home, podemos passar via constructor)
+        areas: widget.userAreas,
       );
     } catch (_) {
       availableChofers = const [];
@@ -163,37 +167,65 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
 
   bool _allMechanicalValid() => mechanicalTowReason.text.trim().isNotEmpty;
 
+  void _resetProgress(int total) {
+    _totalUploads = total;
+    _completedUploads = 0;
+    _progress = total == 0 ? 0.0 : 0.0001; // mostra barra
+  }
+
+  Future<String> _uploadWithProgress(StorageRepository storage, File file, String pathPrefix) async {
+    try {
+      final url = await storage.uploadFile(file: file, pathPrefix: pathPrefix);
+      _completedUploads += 1;
+      _progress = _totalUploads == 0 ? 1.0 : _completedUploads / _totalUploads;
+      if (mounted) setState(() {});
+      return url;
+    } catch (_) {
+      // retry simples
+      final url = await storage.uploadFile(file: file, pathPrefix: pathPrefix);
+      _completedUploads += 1;
+      _progress = _totalUploads == 0 ? 1.0 : _completedUploads / _totalUploads;
+      if (mounted) setState(() {});
+      return url;
+    }
+  }
+
   Future<void> _submitPatio() async {
     setState(() => _submitting = true);
     final storage = StorageRepository();
     final actions = ActionsRepository();
+    // total de uploads = fotos do pátio + comprovantes selecionados
+    final numReceipts = extraExpensesPatio.entries.where((e) => e.value).length;
+    _resetProgress(patioPhotos.length + numReceipts);
     final Map<String, String> photoUrls = {};
     for (final entry in patioPhotos.entries) {
       final file = entry.value!;
-      final url = await storage.uploadFile(
-        file: file,
-        pathPrefix: 'cards/${widget.card.id}/patio/${entry.key}',
-      );
+      final url = await _uploadWithProgress(storage, file, 'cards/${widget.card.id}/patio/${entry.key}');
       photoUrls[entry.key] = url;
     }
     final Map<String, Map<String, String>> expenses = {};
     for (final name in extraExpensesPatio.keys) {
       if (extraExpensesPatio[name] == true) {
         final receipt = patioExpenseReceipts[name]!;
-        final receiptUrl = await storage.uploadFile(
-          file: receipt,
-          pathPrefix: 'cards/${widget.card.id}/patio/expenses/$name',
-        );
+        final receiptUrl = await _uploadWithProgress(storage, receipt, 'cards/${widget.card.id}/patio/expenses/$name');
         expenses[name] = {
           'valor': patioExpenseValues[name] ?? '',
           'comprovanteUrl': receiptUrl,
         };
       }
     }
-    await actions.saveConfirmPatioDelivery(cardId: widget.card.id, photoUrls: photoUrls, expenses: expenses);
-    if (mounted) {
-      setState(() => _submitting = false);
-      Navigator.pop(context);
+    try {
+      await actions.saveConfirmPatioDelivery(cardId: widget.card.id, photoUrls: photoUrls, expenses: expenses);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entrega no pátio salva com sucesso.')));
+        setState(() => _submitting = false);
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _submitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erro ao salvar. Tente novamente.')));
+      }
     }
   }
 
@@ -201,38 +233,49 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
     setState(() => _submitting = true);
     final storage = StorageRepository();
     final actions = ActionsRepository();
-    final photoUrl = await storage.uploadFile(
-      file: towedCarPhoto!,
-      pathPrefix: 'cards/${widget.card.id}/towed',
-    );
+    _resetProgress(1 + extraExpensesTowed.entries.where((e) => e.value).length);
+    final photoUrl = await _uploadWithProgress(storage, towedCarPhoto!, 'cards/${widget.card.id}/towed');
     final Map<String, Map<String, String>> expenses = {};
     for (final name in extraExpensesTowed.keys) {
       if (extraExpensesTowed[name] == true) {
         final receipt = towedExpenseReceipts[name]!;
-        final receiptUrl = await storage.uploadFile(
-          file: receipt,
-          pathPrefix: 'cards/${widget.card.id}/towed/expenses/$name',
-        );
+        final receiptUrl = await _uploadWithProgress(storage, receipt, 'cards/${widget.card.id}/towed/expenses/$name');
         expenses[name] = {
           'valor': towedExpenseValues[name] ?? '',
           'comprovanteUrl': receiptUrl,
         };
       }
     }
-    await actions.saveCarTowed(cardId: widget.card.id, photoUrl: photoUrl, expenses: expenses);
-    if (mounted) {
-      setState(() => _submitting = false);
-      Navigator.pop(context);
+    try {
+      await actions.saveCarTowed(cardId: widget.card.id, photoUrl: photoUrl, expenses: expenses);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Carro guinchado salvo com sucesso.')));
+        setState(() => _submitting = false);
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _submitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erro ao salvar. Tente novamente.')));
+      }
     }
   }
 
   Future<void> _submitMechanical() async {
     setState(() => _submitting = true);
     final actions = ActionsRepository();
-    await actions.saveMechanicalTow(cardId: widget.card.id, reason: mechanicalTowReason.text.trim());
-    if (mounted) {
-      setState(() => _submitting = false);
-      Navigator.pop(context);
+    try {
+      await actions.saveMechanicalTow(cardId: widget.card.id, reason: mechanicalTowReason.text.trim());
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Solicitação de guincho salva.')));
+        setState(() => _submitting = false);
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _submitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erro ao salvar. Tente novamente.')));
+      }
     }
   }
 
@@ -253,6 +296,14 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
             controller: controller,
             padding: const EdgeInsets.all(16),
             children: [
+              if (_submitting)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    LinearProgressIndicator(value: _progress == 0.0 ? null : _progress),
+                    const SizedBox(height: 8),
+                  ],
+                ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

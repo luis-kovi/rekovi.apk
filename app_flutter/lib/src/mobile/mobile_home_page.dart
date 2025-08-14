@@ -102,7 +102,10 @@ class _MobileHomePageState extends State<MobileHomePage> {
                             context: context,
                             isScrollControlled: true,
                             useSafeArea: true,
-                            builder: (_) => MobileTaskModal(card: c),
+                            builder: (_) => MobileTaskModal(
+                              card: c,
+                              userAreas: _userData?.areaAtuacao,
+                            ),
                           );
                         },
                       );
