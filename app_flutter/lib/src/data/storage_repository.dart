@@ -16,8 +16,26 @@ class StorageRepository {
     final storagePath = '$pathPrefix/$fileName';
 
     final data = await file.readAsBytes();
-    final res = await _sb.storage.from(bucket).uploadBinary(storagePath, data, fileOptions: FileOptions(contentType: mime));
-    return _sb.storage.from(bucket).getPublicUrl(res);
+
+    // Retry com backoff simples (3 tentativas: 0ms, 300ms, 800ms)
+    int attempt = 0;
+    final delays = [Duration.zero, const Duration(milliseconds: 300), const Duration(milliseconds: 800)];
+    Object? lastError;
+    while (attempt < delays.length) {
+      try {
+        if (delays[attempt] != Duration.zero) {
+          await Future.delayed(delays[attempt]);
+        }
+        final res = await _sb.storage
+            .from(bucket)
+            .uploadBinary(storagePath, data, fileOptions: FileOptions(contentType: mime));
+        return _sb.storage.from(bucket).getPublicUrl(res);
+      } catch (e) {
+        lastError = e;
+        attempt += 1;
+      }
+    }
+    throw lastError ?? Exception('Falha no upload');
   }
 }
 

@@ -342,6 +342,8 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                 const SizedBox(height: 8),
                 const Text('Alocar chofer', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
+                if (selectedChofer == null && (_choferQuery.isEmpty))
+                  const Text('Selecione um chofer para prosseguir.', style: TextStyle(color: Colors.red)),
                 if (_loadingChofers) const LinearProgressIndicator(),
                 TextField(
                   onChanged: (v) => setState(() => _choferQuery = v.trim().toLowerCase()),
@@ -416,6 +418,11 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                 ),
                 const SizedBox(height: 12),
                 const Text('Fotos do veículo no pátio *', style: TextStyle(fontWeight: FontWeight.w600)),
+                if (!patioPhotos.values.every((f) => f != null))
+                  const Padding(
+                    padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+                    child: Text('Todas as fotos são obrigatórias.', style: TextStyle(color: Colors.red)),
+                  ),
                 const SizedBox(height: 8),
                 GridView.count(
                   shrinkWrap: true,
@@ -449,6 +456,11 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
 
               if (showCarTowed) ...[
                 const Text('Foto do veículo no guincho *', style: TextStyle(fontWeight: FontWeight.w600)),
+                if (towedCarPhoto == null)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+                    child: Text('A foto é obrigatória.', style: TextStyle(color: Colors.red)),
+                  ),
                 const SizedBox(height: 8),
                 SizedBox(
                   height: 120,
@@ -473,6 +485,11 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
 
               if (showRequestTowMechanical) ...[
                 const Text('Detalhe o motivo do guincho *', style: TextStyle(fontWeight: FontWeight.w600)),
+                if (mechanicalTowReason.text.trim().isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+                    child: Text('Campo obrigatório.', style: TextStyle(color: Colors.red)),
+                  ),
                 const SizedBox(height: 6),
                 TextField(
                   controller: mechanicalTowReason,

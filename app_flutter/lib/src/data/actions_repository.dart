@@ -9,12 +9,15 @@ class ActionsRepository {
     required Map<String, String> photoUrls,
     required Map<String, Map<String, String>> expenses, // nome -> {valor, comprovanteUrl}
   }) async {
-    await _sb.from('actions_confirm_patio_delivery').insert({
+    final res = await _sb.from('actions_confirm_patio_delivery').insert({
       'card_id': cardId,
       'photos': photoUrls,
       'expenses': expenses,
       'created_at': DateTime.now().toIso8601String(),
     });
+    if (res is Map && res['error'] != null) {
+      throw Exception(res['error']['message'] ?? 'Erro ao salvar confirm_patio');
+    }
   }
 
   Future<void> saveCarTowed({
@@ -22,23 +25,29 @@ class ActionsRepository {
     required String photoUrl,
     required Map<String, Map<String, String>> expenses,
   }) async {
-    await _sb.from('actions_car_towed').insert({
+    final res = await _sb.from('actions_car_towed').insert({
       'card_id': cardId,
       'photo_url': photoUrl,
       'expenses': expenses,
       'created_at': DateTime.now().toIso8601String(),
     });
+    if (res is Map && res['error'] != null) {
+      throw Exception(res['error']['message'] ?? 'Erro ao salvar car_towed');
+    }
   }
 
   Future<void> saveMechanicalTow({
     required String cardId,
     required String reason,
   }) async {
-    await _sb.from('actions_mechanical_tow').insert({
+    final res = await _sb.from('actions_mechanical_tow').insert({
       'card_id': cardId,
       'reason': reason,
       'created_at': DateTime.now().toIso8601String(),
     });
+    if (res is Map && res['error'] != null) {
+      throw Exception(res['error']['message'] ?? 'Erro ao salvar mechanical_tow');
+    }
   }
 
   Future<void> saveAssignChofer({
@@ -48,7 +57,7 @@ class ActionsRepository {
     required String date,
     required String time,
   }) async {
-    await _sb.from('actions_assign_chofer').insert({
+    final res = await _sb.from('actions_assign_chofer').insert({
       'card_id': cardId,
       'chofer_name': choferName,
       'chofer_email': choferEmail,
@@ -56,6 +65,9 @@ class ActionsRepository {
       'collection_time': time,
       'created_at': DateTime.now().toIso8601String(),
     });
+    if (res is Map && res['error'] != null) {
+      throw Exception(res['error']['message'] ?? 'Erro ao salvar assign_chofer');
+    }
   }
 }
 
