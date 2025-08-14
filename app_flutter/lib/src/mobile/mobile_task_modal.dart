@@ -73,6 +73,7 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
       final repo = ChoferRepository();
       availableChofers = await repo.fetchAvailableChofers(
         empresa: widget.card.empresaResponsavel,
+        // áreas poderiam vir do usuário logado (UserData), se quisermos filtrar
       );
     } catch (_) {
       availableChofers = const [];
