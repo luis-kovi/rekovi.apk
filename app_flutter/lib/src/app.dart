@@ -16,8 +16,10 @@ class RekoviApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFF355A)),
         useMaterial3: true,
         scaffoldBackgroundColor: const Color(0xFFF7F9FA),
-        inputDecorationTheme: const InputDecorationTheme(
-          border: OutlineInputBorder(),
+        inputDecorationTheme: InputDecorationTheme(
+          border: const OutlineInputBorder(),
+          hintStyle: TextStyle(color: Colors.grey.shade600),
+          labelStyle: TextStyle(color: Colors.grey.shade700),
         ),
         fontFamily: 'Inter',
       ),
