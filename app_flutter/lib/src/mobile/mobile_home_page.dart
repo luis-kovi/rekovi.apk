@@ -63,6 +63,11 @@ class _MobileHomePageState extends State<MobileHomePage> {
       appBar: MobileHeader(
         userEmail: SupabaseManager.client.auth.currentUser?.email,
         isUpdating: _loading,
+        onLogout: () async {
+          await SupabaseManager.client.auth.signOut();
+          if (!mounted) return;
+          Navigator.of(context).pushReplacementNamed('/');
+        },
         onOpenFilter: () {
           showModalBottomSheet(
             context: context,

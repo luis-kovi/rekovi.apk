@@ -4,8 +4,9 @@ class MobileHeader extends StatelessWidget implements PreferredSizeWidget {
   final String? userEmail;
   final bool isUpdating;
   final VoidCallback? onOpenFilter;
+  final VoidCallback? onLogout;
 
-  const MobileHeader({super.key, this.userEmail, this.isUpdating = false, this.onOpenFilter});
+  const MobileHeader({super.key, this.userEmail, this.isUpdating = false, this.onOpenFilter, this.onLogout});
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -28,6 +29,11 @@ class MobileHeader extends StatelessWidget implements PreferredSizeWidget {
             tooltip: 'Filtros',
             onPressed: onOpenFilter,
             icon: const Icon(Icons.filter_alt_outlined),
+          ),
+          IconButton(
+            tooltip: 'Sair',
+            onPressed: onLogout,
+            icon: const Icon(Icons.logout),
           ),
         ],
       ),
