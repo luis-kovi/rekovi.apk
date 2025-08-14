@@ -292,7 +292,31 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
           ),
-          child: ListView(
+          child: WillPopScope(
+            onWillPop: () async {
+              final hasChanges = patioPhotos.values.any((f) => f != null) ||
+                  towedCarPhoto != null ||
+                  extraExpensesPatio.values.any((v) => v) ||
+                  extraExpensesTowed.values.any((v) => v) ||
+                  mechanicalTowReason.text.trim().isNotEmpty ||
+                  selectedChofer != null ||
+                  collectionDate.text.isNotEmpty ||
+                  collectionTime.text.isNotEmpty;
+              if (!hasChanges) return true;
+              final leave = await showDialog<bool>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('Descartar alterações?'),
+                  content: const Text('Existem alterações não salvas. Deseja sair mesmo assim?'),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
+                    TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Sair')),
+                  ],
+                ),
+              );
+              return leave ?? false;
+            },
+            child: ListView(
             controller: controller,
             padding: const EdgeInsets.all(16),
             children: [
@@ -380,8 +404,8 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                   ),
                 const SizedBox(height: 12),
                 FilledButton(
-                  onPressed: _assignChoferValid() ? _submitAssignChofer : null,
-                  child: const Text('Confirmar alocação'),
+                  onPressed: (!_submitting && _assignChoferValid()) ? _submitAssignChofer : null,
+                  child: _submitting ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Confirmar alocação'),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -450,7 +474,10 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                     )),
                 _expenseFields(extraExpensesPatio, patioExpenseValues, patioExpenseReceipts),
                 const SizedBox(height: 8),
-                FilledButton(onPressed: _allPatioValid() ? _submitPatio : null, child: const Text('Confirmar')),
+                FilledButton(
+                  onPressed: (!_submitting && _allPatioValid()) ? _submitPatio : null,
+                  child: _submitting ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Confirmar'),
+                ),
                 const SizedBox(height: 16),
               ],
 
@@ -479,7 +506,10 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                     )),
                 _expenseFields(extraExpensesTowed, towedExpenseValues, towedExpenseReceipts),
                 const SizedBox(height: 8),
-                FilledButton(onPressed: _allTowedValid() ? _submitTowed : null, child: const Text('Confirmar')),
+                FilledButton(
+                  onPressed: (!_submitting && _allTowedValid()) ? _submitTowed : null,
+                  child: _submitting ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Confirmar'),
+                ),
                 const SizedBox(height: 16),
               ],
 
@@ -497,9 +527,13 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                   decoration: const InputDecoration(hintText: 'Descreva com detalhes...'),
                 ),
                 const SizedBox(height: 8),
-                FilledButton(onPressed: _allMechanicalValid() ? _submitMechanical : null, child: const Text('Confirmar')),
+                FilledButton(
+                  onPressed: (!_submitting && _allMechanicalValid()) ? _submitMechanical : null,
+                  child: _submitting ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Confirmar'),
+                ),
               ],
             ],
+          ),
           ),
         );
       },
