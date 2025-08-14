@@ -40,6 +40,23 @@ class ActionsRepository {
       'created_at': DateTime.now().toIso8601String(),
     });
   }
+
+  Future<void> saveAssignChofer({
+    required String cardId,
+    required String choferName,
+    required String choferEmail,
+    required String date,
+    required String time,
+  }) async {
+    await _sb.from('actions_assign_chofer').insert({
+      'card_id': cardId,
+      'chofer_name': choferName,
+      'chofer_email': choferEmail,
+      'collection_date': date,
+      'collection_time': time,
+      'created_at': DateTime.now().toIso8601String(),
+    });
+  }
 }
 
 

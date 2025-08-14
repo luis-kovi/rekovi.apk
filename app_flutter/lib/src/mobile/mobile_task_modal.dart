@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../data/models/card_model.dart';
 import '../data/storage_repository.dart';
 import '../data/actions_repository.dart';
+import '../data/chofer_repository.dart';
 
 class MobileTaskModal extends StatefulWidget {
   final CardModel card;
@@ -58,6 +59,40 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
   String? selectedChofer;
   String? choferEmail;
   List<Map<String, String>> availableChofers = const [];
+  bool _loadingChofers = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadChofers();
+  }
+
+  Future<void> _loadChofers() async {
+    setState(() => _loadingChofers = true);
+    try {
+      final repo = ChoferRepository();
+      availableChofers = await repo.fetchAvailableChofers();
+    } catch (_) {
+      availableChofers = const [];
+    } finally {
+      if (mounted) setState(() => _loadingChofers = false);
+    }
+  }
+
+  bool _assignChoferValid() =>
+      (selectedChofer != null && (choferEmail?.isNotEmpty ?? false) && collectionDate.text.isNotEmpty && collectionTime.text.isNotEmpty);
+
+  Future<void> _submitAssignChofer() async {
+    final actions = ActionsRepository();
+    await actions.saveAssignChofer(
+      cardId: widget.card.id,
+      choferName: selectedChofer!,
+      choferEmail: choferEmail!,
+      date: collectionDate.text,
+      time: collectionTime.text,
+    );
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chofer alocado com sucesso.')));
+  }
 
   Future<void> _pickImage(Function(File) setter) async {
     final img = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 85);
@@ -239,6 +274,7 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                 const SizedBox(height: 8),
                 const Text('Alocar chofer', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
+                if (_loadingChofers) const LinearProgressIndicator(),
                 DropdownButtonFormField<String>(
                   value: selectedChofer,
                   decoration: const InputDecoration(labelText: 'Chofer *'),
@@ -267,6 +303,11 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                     decoration: const InputDecoration(labelText: 'E-mail do Chofer'),
                   ),
                 const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: _assignChoferValid() ? _submitAssignChofer : null,
+                  child: const Text('Confirmar alocação'),
+                ),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: collectionDate,
                   readOnly: true,
