@@ -119,7 +119,7 @@ export function isMobileDevice(userAgent: string): boolean {
 
 // Função para determinar a rota de redirecionamento baseada no dispositivo
 export function getRedirectRoute(userAgent: string): string {
-  return isMobileDevice(userAgent) ? '/mobile' : '/kanban';
+  return '/mobile';
 }
 
 // Regex para detecção móvel no client-side (mais comum)

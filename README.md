@@ -1,12 +1,12 @@
-# Prod Recolha v2
+# Rekovi Android App
 
-Aplicação de gerenciamento de tarefas com autenticação segura.
+Aplicação mobile Android para gestão de recolhas com autenticação segura.
 
 ## 🔒 Correções de Segurança Implementadas
 
 ### 1. Middleware de Autenticação
 - ✅ Implementado middleware que verifica sessões do usuário
-- ✅ Proteção de rotas sensíveis (`/kanban`, `/settings`)
+- ✅ Proteção de rotas sensíveis (`/mobile`, `/settings`)
 - ✅ Redirecionamento automático para login quando não autenticado
 - ✅ Prevenção de acesso a páginas de auth quando já logado
 
@@ -26,6 +26,7 @@ Aplicação de gerenciamento de tarefas com autenticação segura.
 ### Pré-requisitos
 - Node.js 18+
 - Conta no Supabase
+- React Native CLI (para desenvolvimento Android)
 
 ### Variáveis de Ambiente
 Crie um arquivo `.env.local` na raiz do projeto:
@@ -59,7 +60,7 @@ A aplicação agora possui um sistema de autenticação completo:
 - **Logout**: Botão disponível nas páginas protegidas
 
 ### Rotas Protegidas
-- `/kanban` - Quadro Kanban
+- `/mobile` - Interface Mobile Principal
 - `/settings` - Configurações
 
 ### Rotas Públicas
@@ -73,12 +74,21 @@ A aplicação agora possui um sistema de autenticação completo:
 3. **Tratamento de Erros**: Melhorado para evitar falhas silenciosas
 4. **Validação de Variáveis**: Verificação adequada de variáveis de ambiente
 
+## 📱 Funcionalidades do App Android
+
+- **Gestão de Recolhas**: Interface mobile otimizada para dispositivos Android
+- **Autenticação Segura**: Login com Google e email/senha
+- **Sistema de Permissões**: Controle de acesso baseado em roles
+- **Interface Responsiva**: Design mobile-first para melhor usabilidade
+- **Funcionalidades Mobile**: Todas as ações disponíveis na versão web mobile
+
 ## 📝 Notas Importantes
 
 - Certifique-se de configurar as variáveis de ambiente do Supabase
 - O middleware agora protege adequadamente as rotas sensíveis
 - Os erros são tratados de forma mais robusta
 - A configuração de build foi otimizada para segurança
+- App otimizado para dispositivos móveis Android
 
 ## 🚨 Antes do Deploy
 

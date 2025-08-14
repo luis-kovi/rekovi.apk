@@ -73,9 +73,7 @@ export default function SignIn() {
         setError(error.message)
       } else {
         // Sucesso: usuário autenticado e autorizado
-        const isMobile = MOBILE_REGEX.test(navigator.userAgent)
-        const redirectRoute = isMobile ? '/mobile' : '/kanban'
-        router.push(redirectRoute)
+        router.push('/mobile')
       }
     } catch (err) {
       setError('Erro ao fazer login. Tente novamente.')
@@ -94,14 +92,10 @@ export default function SignIn() {
         throw new Error('Supabase client not available')
       }
 
-      // Detectar se é dispositivo móvel para redirecionar corretamente
-      const isMobile = MOBILE_REGEX.test(navigator.userAgent)
-      const redirectRoute = isMobile ? '/mobile' : '/kanban'
-
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${redirectRoute}`,
+          redirectTo: `${window.location.origin}/auth/callback?next=/mobile`,
           queryParams: {
             prompt: 'consent',
           },

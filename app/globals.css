@@ -312,25 +312,7 @@ select {
   opacity: 1;
 }
 
-/* Modern Kanban Board Styles */
-.kanban-board {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  min-height: calc(100vh - 120px);
-}
-
-.kanban-card {
-  transition: all 0.3s ease;
-  border: 1px solid #e2e8f0;
-  backdrop-filter: blur(10px);
-}
-
-.kanban-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  border-color: #cbd5e1;
-}
-
-/* Modern Scrollbar */
+/* Mobile Scrollbar */
 .scroll-container::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -351,10 +333,7 @@ select {
   background: rgba(0, 0, 0, 0.3);
 }
 
-/* Phase Column Animations - Mais discreto */
-.kanban-board .flex-shrink-0 {
-  animation: fadeIn 0.3s ease-out;
-}
+/* Mobile Animations - Mais discreto */
 
 @keyframes fadeIn {
   from {

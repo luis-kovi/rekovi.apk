@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import Header from '@/components/Header'
+import MobileHeader from '@/components/MobileHeader'
 
 // Forçar renderização dinâmica para evitar pré-renderizado
 export const dynamic = 'force-dynamic'
@@ -136,8 +136,8 @@ export default function SettingsPage() {
       console.log('Settings: Is admin:', isAdmin)
 
       if (!isAdmin) {
-        console.log('Settings: Not admin, redirecting to /kanban')
-        router.push('/kanban')
+        console.log('Settings: Not admin, redirecting to /mobile')
+        router.push('/mobile')
         return
       }
 
@@ -317,11 +317,7 @@ export default function SettingsPage() {
 
   // Função para redirecionar ao clicar no logo
   const handleLogoClick = () => {
-    if (isMobile()) {
-      router.push('/mobile')
-    } else {
-      router.push('/kanban')
-    }
+    router.push('/mobile')
   }
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -397,7 +393,7 @@ export default function SettingsPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
-        <Header user={user} permissionType={permissionType} isUpdating={false} />
+        <MobileHeader user={user} permissionType={permissionType} isUpdating={false} />
         <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#FF355A] border-t-transparent mx-auto mb-4"></div>
@@ -412,7 +408,7 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
       {/* Header com logo clicável */}
       <div className="relative">
-      <Header user={user} permissionType={permissionType} isUpdating={false} />
+              <MobileHeader user={user} permissionType={permissionType} isUpdating={false} />
         {/* Overlay invisível no logo para capturar cliques */}
         <div 
           className="absolute top-3 left-6 w-32 h-8 cursor-pointer z-10"
