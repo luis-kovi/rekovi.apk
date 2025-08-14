@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../core/supabase_client.dart';
+import 'auth_service.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -12,6 +14,7 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _loading = false;
   String? _error;
+  final _auth = AuthService();
 
   Future<void> _handleSignIn() async {
     setState(() {
@@ -19,8 +22,8 @@ class _SignInPageState extends State<SignInPage> {
       _error = null;
     });
     try {
-      // TODO: Integrar com Supabase Flutter - validar usuário e permissões
-      await Future.delayed(const Duration(milliseconds: 500));
+      await SupabaseManager.init();
+      await _auth.signInWithPassword(_emailController.text.trim(), _passwordController.text);
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/mobile');
     } catch (e) {
