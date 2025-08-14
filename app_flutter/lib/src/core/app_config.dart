@@ -8,6 +8,12 @@ class AppConfig {
     'SUPABASE_ANON_KEY',
     defaultValue: 'SUA_CHAVE_ANONIMA_AQUI',
   );
+
+  // Nome do bucket de Storage a ser usado para uploads
+  static const String storageBucket = String.fromEnvironment(
+    'SUPABASE_BUCKET',
+    defaultValue: 'attachments',
+  );
 }
 
 

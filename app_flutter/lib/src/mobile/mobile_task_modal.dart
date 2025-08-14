@@ -3,6 +3,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../data/models/card_model.dart';
+import '../data/storage_repository.dart';
+import '../data/actions_repository.dart';
 
 class MobileTaskModal extends StatefulWidget {
   final CardModel card;
@@ -120,6 +122,67 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
   }
 
   bool _allMechanicalValid() => mechanicalTowReason.text.trim().isNotEmpty;
+
+  Future<void> _submitPatio() async {
+    final storage = StorageRepository();
+    final actions = ActionsRepository();
+    final Map<String, String> photoUrls = {};
+    for (final entry in patioPhotos.entries) {
+      final file = entry.value!;
+      final url = await storage.uploadFile(
+        file: file,
+        pathPrefix: 'cards/${widget.card.id}/patio/${entry.key}',
+      );
+      photoUrls[entry.key] = url;
+    }
+    final Map<String, Map<String, String>> expenses = {};
+    for (final name in extraExpensesPatio.keys) {
+      if (extraExpensesPatio[name] == true) {
+        final receipt = patioExpenseReceipts[name]!;
+        final receiptUrl = await storage.uploadFile(
+          file: receipt,
+          pathPrefix: 'cards/${widget.card.id}/patio/expenses/$name',
+        );
+        expenses[name] = {
+          'valor': patioExpenseValues[name] ?? '',
+          'comprovanteUrl': receiptUrl,
+        };
+      }
+    }
+    await actions.saveConfirmPatioDelivery(cardId: widget.card.id, photoUrls: photoUrls, expenses: expenses);
+    if (mounted) Navigator.pop(context);
+  }
+
+  Future<void> _submitTowed() async {
+    final storage = StorageRepository();
+    final actions = ActionsRepository();
+    final photoUrl = await storage.uploadFile(
+      file: towedCarPhoto!,
+      pathPrefix: 'cards/${widget.card.id}/towed',
+    );
+    final Map<String, Map<String, String>> expenses = {};
+    for (final name in extraExpensesTowed.keys) {
+      if (extraExpensesTowed[name] == true) {
+        final receipt = towedExpenseReceipts[name]!;
+        final receiptUrl = await storage.uploadFile(
+          file: receipt,
+          pathPrefix: 'cards/${widget.card.id}/towed/expenses/$name',
+        );
+        expenses[name] = {
+          'valor': towedExpenseValues[name] ?? '',
+          'comprovanteUrl': receiptUrl,
+        };
+      }
+    }
+    await actions.saveCarTowed(cardId: widget.card.id, photoUrl: photoUrl, expenses: expenses);
+    if (mounted) Navigator.pop(context);
+  }
+
+  Future<void> _submitMechanical() async {
+    final actions = ActionsRepository();
+    await actions.saveMechanicalTow(cardId: widget.card.id, reason: mechanicalTowReason.text.trim());
+    if (mounted) Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -265,10 +328,7 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                     )),
                 _expenseFields(extraExpensesPatio, patioExpenseValues, patioExpenseReceipts),
                 const SizedBox(height: 8),
-                FilledButton(
-                  onPressed: _allPatioValid() ? () {/* submit */} : null,
-                  child: const Text('Confirmar'),
-                ),
+                FilledButton(onPressed: _allPatioValid() ? _submitPatio : null, child: const Text('Confirmar')),
                 const SizedBox(height: 16),
               ],
 
@@ -292,10 +352,7 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                     )),
                 _expenseFields(extraExpensesTowed, towedExpenseValues, towedExpenseReceipts),
                 const SizedBox(height: 8),
-                FilledButton(
-                  onPressed: _allTowedValid() ? () {/* submit */} : null,
-                  child: const Text('Confirmar'),
-                ),
+                FilledButton(onPressed: _allTowedValid() ? _submitTowed : null, child: const Text('Confirmar')),
                 const SizedBox(height: 16),
               ],
 
@@ -308,10 +365,7 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                   decoration: const InputDecoration(hintText: 'Descreva com detalhes...'),
                 ),
                 const SizedBox(height: 8),
-                FilledButton(
-                  onPressed: _allMechanicalValid() ? () {/* submit */} : null,
-                  child: const Text('Confirmar'),
-                ),
+                FilledButton(onPressed: _allMechanicalValid() ? _submitMechanical : null, child: const Text('Confirmar')),
               ],
             ],
           ),
