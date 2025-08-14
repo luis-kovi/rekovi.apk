@@ -60,6 +60,8 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
   String? choferEmail;
   List<Map<String, String>> availableChofers = const [];
   bool _loadingChofers = false;
+  bool _submitting = false;
+  String _choferQuery = '';
 
   @override
   void initState() {
@@ -73,7 +75,7 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
       final repo = ChoferRepository();
       availableChofers = await repo.fetchAvailableChofers(
         empresa: widget.card.empresaResponsavel,
-        // áreas poderiam vir do usuário logado (UserData), se quisermos filtrar
+        // areas: userData.areaAtuacao (quando disponível na Home, podemos passar via constructor)
       );
     } catch (_) {
       availableChofers = const [];
@@ -162,6 +164,7 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
   bool _allMechanicalValid() => mechanicalTowReason.text.trim().isNotEmpty;
 
   Future<void> _submitPatio() async {
+    setState(() => _submitting = true);
     final storage = StorageRepository();
     final actions = ActionsRepository();
     final Map<String, String> photoUrls = {};
@@ -188,10 +191,14 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
       }
     }
     await actions.saveConfirmPatioDelivery(cardId: widget.card.id, photoUrls: photoUrls, expenses: expenses);
-    if (mounted) Navigator.pop(context);
+    if (mounted) {
+      setState(() => _submitting = false);
+      Navigator.pop(context);
+    }
   }
 
   Future<void> _submitTowed() async {
+    setState(() => _submitting = true);
     final storage = StorageRepository();
     final actions = ActionsRepository();
     final photoUrl = await storage.uploadFile(
@@ -213,13 +220,20 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
       }
     }
     await actions.saveCarTowed(cardId: widget.card.id, photoUrl: photoUrl, expenses: expenses);
-    if (mounted) Navigator.pop(context);
+    if (mounted) {
+      setState(() => _submitting = false);
+      Navigator.pop(context);
+    }
   }
 
   Future<void> _submitMechanical() async {
+    setState(() => _submitting = true);
     final actions = ActionsRepository();
     await actions.saveMechanicalTow(cardId: widget.card.id, reason: mechanicalTowReason.text.trim());
-    if (mounted) Navigator.pop(context);
+    if (mounted) {
+      setState(() => _submitting = false);
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -278,10 +292,16 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
                 const Text('Alocar chofer', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 if (_loadingChofers) const LinearProgressIndicator(),
+                TextField(
+                  onChanged: (v) => setState(() => _choferQuery = v.trim().toLowerCase()),
+                  decoration: const InputDecoration(hintText: 'Buscar chofer...'),
+                ),
+                const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   value: selectedChofer,
                   decoration: const InputDecoration(labelText: 'Chofer *'),
                   items: availableChofers
+                      .where((c) => _choferQuery.isEmpty || (c['name'] ?? '').toLowerCase().contains(_choferQuery))
                       .map((c) => DropdownMenuItem(
                             value: c['name'],
                             child: Text(c['name'] ?? ''),

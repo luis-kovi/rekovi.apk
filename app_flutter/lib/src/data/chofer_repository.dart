@@ -15,10 +15,13 @@ class ChoferRepository {
     if (empresa != null && empresa.isNotEmpty) {
       query = query.eq('empresa', empresa);
     }
-    // Nota: caso 'area_atuacao' seja jsonb, ajuste para contains
+    // Se a coluna 'area_atuacao' for jsonb[], usar contains
     if (areas != null && areas.isNotEmpty) {
-      // Dependendo do Supabase, pode usar .contains('area_atuacao', areas)
-      // Aqui mantemos simples; caso necessário, deixamos sem filtro por áreas
+      try {
+        query = query.contains('area_atuacao', areas);
+      } catch (_) {
+        // fallback: sem filtro por áreas caso não seja suportado
+      }
     }
 
     final res = await query;
