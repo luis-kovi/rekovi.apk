@@ -71,7 +71,9 @@ class _MobileTaskModalState extends State<MobileTaskModal> {
     setState(() => _loadingChofers = true);
     try {
       final repo = ChoferRepository();
-      availableChofers = await repo.fetchAvailableChofers();
+      availableChofers = await repo.fetchAvailableChofers(
+        empresa: widget.card.empresaResponsavel,
+      );
     } catch (_) {
       availableChofers = const [];
     } finally {
